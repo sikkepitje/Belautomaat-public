@@ -1,6 +1,5 @@
 
 
-Belautomaat is een Arduino-project 
-voor het maken van een automatische schakelklok voor een schoolbel.
+Belautomaat is een Arduino-project voor het maken van een automatische schakelklok voor een schoolbel. We noemen dit ook wel een belautomaat.
 
-gemaakt door Paul Wiegmans (p.wiegmans@bonhoeffer.nl)
+Gemaakt door Paul Wiegmans (p.wiegmans@bonhoeffer.nl)
