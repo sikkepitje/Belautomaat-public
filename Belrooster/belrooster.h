@@ -6,8 +6,18 @@
 #ifndef Belrooster_h
 #define Belrooster_h
 
-#define DEBUG (true)
+#define DEBUG
 #include <EEPROM.h> 
+
+/* ======== Debug hulpjes ======== */
+//#define DEBUG
+#ifdef DEBUG
+  #define DPRINT(...)     Serial.print(__VA_ARGS__)
+  #define DPRINTLN(...)   Serial.println(__VA_ARGS__)
+#else
+  #define DPRINT(...)
+  #define DPRINTLN(...)
+#endif
 
 // Roostertabel en timtab grootte is afhankelijk van board hardware  
 // zie definities in "C:\Program Files (x86)\Arduino\hardware\arduino\avr\boards.txt"
@@ -20,6 +30,9 @@
     #define ROOSTERSIZE 240
 #elif defined(ARDUINO_AVR_DUEMILANOVE)     
     // Arduino Duemilanove EEPROM: 512B (ATMega168) of 1KB (ATMega328)
+    #define ROOSTERSIZE 112
+#elif defined(ARDUINO_AVR_LEONARDO)     
+    // Arduino Leonardo of Micro Pro: 1KB (ATMega32U4)
     #define ROOSTERSIZE 112
 #else
     #error "Unknown board"
@@ -61,7 +74,7 @@ public:
     bool binairZoeken(Signaal_t &bm, int &piInsert);
     bool simpelZoeken(Signaal_t &bm, int &matchpos);
     int vindVrijeEeindex(void);  // zoek eerst vrije adres in EEPROM, geef index of ERROR_EEPROM_FULL
-    int signaalInvoegen(Signaal_t &bm);  // Signaal invoegen, retourneer status
+    int signaalInvoegen(Signaal_t &bm);  // Signaal invoegen, retourneer status = 0 bij succes, <0 bij fout
     int signaalInvoegen(int hour, int minute, int dayOfWeek, int channel);
     char *printDayOfWeek2(char *buffer, int dayOfWeek);  // print bitmap weekdag, 2 tekens per dag
     char *printDayOfWeek1(char *buffer, int dayOfWeek);  // print weekdag bitmap, 1 teken per dag
@@ -69,13 +82,13 @@ public:
     char *printndecimals(char *buffer, int value, int numberofchars);
     char *printHex(char *buffer, int num);
     char *printSignaal(char *buffer, Signaal_t &bm);
-    uint8_t update(int hour, int minute, int dow);  // hart van de scheduler, roep dit aan eens per minuut.
-    int aantalSignalen();        // geef aantal signaaltijden in EEPROM of timtab
     void printRoosterRegel(int index);  // DEBUG
     void printRooster();   // DEBUG
     void printStatus(int status);  // DEBUG
-    int volgendSignaal(int tindex, int kanaal);     // blader naar volgend signaal in gegeven kanaal
-    int vorigSignaal(int tindex, int kanaal);       // blader naar vorig singnaal in gegeven kanaal
+    uint8_t update(int hour, int minute, int dow);  // hart van de scheduler, roep dit aan eens per minuut.
+    int aantalSignalen();        // geef aantal signaaltijden in EEPROM of timtab
+    int haalVolgend(int index, int filter);     // blader naar volgend signaal in gegeven kanaal
+    int haalVorig(int index, int filter);       // blader naar vorig singnaal in gegeven kanaal
 private:
     void initTimtab(void);           // indextabel opbouwen en sorteren.
     bool testEepromMarker();      // controller marker in EEPROM, geef true indien aanwezig
@@ -83,7 +96,6 @@ private:
     int adres2index(int adres);     // omrekenen van adres naar index in EEPROM
     void laadSignaal(int eeindex, Signaal_t &bm);  // Signaal ophalen uit EEPROM 
     void bergopSignaal(int eeindex, Signaal_t &bm);  // Signaal opslaan in EEPROM
-
 };
 
 #endif
