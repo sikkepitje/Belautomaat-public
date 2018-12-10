@@ -64,7 +64,7 @@ void Rooster::schoonRooster(void)
 {
     // initialiseer variabelen, vul EEPROM met markerstring en vul verder met
     // EMPTY waarden.
-    Serial.println("! schoon rooster");
+    //Serial.println("! schoon rooster");
     int adres, index;
     for (adres = 0, index = 0; markerString[index] != 0; adres++, index++)
     {
@@ -204,7 +204,7 @@ int Rooster::vindVrijeEeindex(void)
     }
     lastFreeEeprom = adres;
     int eeindex = adres2index(adres);
-    Serial.print("  vindVrijeEeindex:");  Serial.println(eeindex);
+    //Serial.print("  vindVrijeEeindex:");  Serial.println(eeindex);
     return eeindex;
 }
 
@@ -212,8 +212,6 @@ void Rooster::signaalWissen(int ttindex)
 {
     // verwijder Signaal uit timtab, behoud sortering
     // wis ingang in timtab, wis record in eeprom, tellers bijwerken
-    Serial.print("> signaalWissen...");
-    Serial.println(ttindex);
     
     int index;
     if (numtimtab <= 0)
@@ -256,29 +254,20 @@ bool Rooster::binairZoeken(Signaal_t &bm, int &piInsert)
         int eeindex = timtab[iN];
         laadSignaal(eeindex, sN);
         int nCmp = vergelijkSignaal(sN, bm);
-        if (nCmp > 0)
-        {
+        if (nCmp > 0) {
             /* gezochte string zit in of net rechts naast het rechter stuk */
             iL = iN;
-        }
-        else if (nCmp < 0)
-        {
+        } else if (nCmp < 0) {
             /* gezochte string zit in of net links naast het linker stuk */
             iR = iN;
-        }
-        else
-        {
+        } else {
             bFound = true;
             break;
         }
-        if (nSpan == 1)
-        {
-            if (nCmp > 0)
-            {
+        if (nSpan == 1) {
+            if (nCmp > 0) {
                 iN = iR;
-            }
-            else
-            {
+            } else {
                 iN = iL;
             }
             break; // niet gevonden; invoegpositie wel
@@ -319,16 +308,14 @@ bool Rooster::simpelZoeken(Signaal_t &bm, int &matchpos) {
 
 int Rooster::signaalInvoegen(Signaal_t &bm)
 {
+    // signaal invoegen; retourneer foutmelding of 0 bij succes
     // strategie: zoek een gelijke in tabel (via binair zoeken)
     // wanneer gelijke gevonden, tel weekdag-bitmaskers bij elkaar 
     // op en gooi weg.
     // wanneer gelijke niet gevonden, voeg in tabel in op index
     // retourneer index in timtab
 
-    //char buf[30];  Serial.print("> signaalInvoegen...");
-    //printSignaal(buf, bm); Serial.println(buf);
-
-    // speciaal: er zijn 0 records 
+    // speciaal geval: er zijn 0 records 
     if (numtimtab == 0)
     {
         int eeindex = vindVrijeEeindex(); // zoek eerste vrij record in EEPROM
@@ -368,11 +355,7 @@ int Rooster::signaalInvoegen(Signaal_t &bm)
     }
     bergopSignaal(eeindex, bm);
     // We schuiven alles vanaf matchpos 1 plaats op  
-    
-    //Serial.print("  Zoeken..");
-    //Serial.print("  gevonden:");  Serial.print(gevonden);
-    //Serial.print("  matchpos:");  Serial.print(matchpos);
-    //Serial.print("  numtimtab:"); Serial.println(numtimtab);  
+
     int t;
     t = numtimtab - 1;
     while (t >= matchpos) {
@@ -381,10 +364,7 @@ int Rooster::signaalInvoegen(Signaal_t &bm)
     }
     timtab[matchpos] = eeindex;
     numtimtab++;
-
-    //Serial.print("  Ingevoegd in timtab index: "); Serial.print(matchpos);
-    //printRooster();
-    return matchpos; // alles OK
+    return 0; // alles OK
 }
 
 int Rooster::signaalInvoegen(int hour, int minute, int dayOfWeek, int channel)
@@ -505,34 +485,21 @@ void Rooster::printRoosterRegel(int index)
 {
     char buf[25];
     Signaal_t bm;
-    int adres, eeindex;    
-    eeindex = timtab[index];
-    adres = index2adres(eeindex);
+    int eeindex = timtab[index];
     laadSignaal(eeindex, bm);
 
     // print timtab index en waarde en omgerekend adres
-    sprintf(buf, "  t[%.3d]=E%.3d (@%.4d) ", index, eeindex,adres);
-    Serial.print(buf);
-
+    //int adres = index2adres(eeindex);
+    //sprintf(buf, "  t[%.3d]=E%.3d (@%.4d) ", index, eeindex,adres);
+    //Serial.print(buf);
+    
     // print Signaal
     printSignaal(buf, bm);
-    Serial.print(buf);
-
-    // EEPROM dump
-    Serial.print(" [");
-    for (int t = 0; t < 4; t++)
-    {
-        printHex(buf, EEPROM[adres + t]);
-        Serial.print(buf);
-        Serial.print(" ");
-    }
-    Serial.println("]");
-
+    Serial.println(buf);
 }
 
 void Rooster::printRooster()
 {
-    char buf[25];
     Serial.print(F("  numtimtab:"));
     Serial.print(numtimtab);
     Serial.print(F("  nextindex:"));
@@ -543,53 +510,9 @@ void Rooster::printRooster()
     }
 }
 
-uint8_t Rooster::update(int hour, int minute, int dow)
+void Rooster::printStatus(int status) 
 {
-    // update test of volgende Signaal actief is, en retourneert channel,
-    // verhoogt nextindex
-    Signaal_t bm;
-    laadSignaal(timtab[nextindex], bm);
-    if (hour == bm.hour && minute == bm.minute && ((1 << dow) & bm.dayOfWeek))
-    {
-        nextindex = (nextindex + 1) % numtimtab;
-        return bm.channel;
-    }
-    else
-    {
-        return INFO_NONE_ACTIVE; // geen signalen actief
-    }
-}
-
-int Rooster::aantalSignalen() {
-    return numtimtab;
-}
-
-int Rooster::volgendSignaal(int tindex, int kanaalfilter) {
-    int i = tindex + 1;
-    Signaal_t sig;
-    while (i < numtimtab) {
-        laadSignaal(timtab[i], sig);
-        if (sig.channel == kanaalfilter) {
-            return i;
-        }
-        i++;
-    }
-    return WARN_NOMORESIGNALS;
-}
-
-int Rooster::vorigSignaal(int tindex, int kanaalfilter) {
-    int i = tindex - 1;
-    Signaal_t sig;
-    while (i >= 0) {
-        laadSignaal(timtab[i], sig);
-        if (sig.channel == kanaalfilter) {
-            return i;
-        }
-    }
-}
-
-void Rooster::printStatus(int status) {
-    // geef status in tekst
+    // geef tekst van status gegeven door signaalInvoegen
     Serial.print("= Status: ");
     Serial.print(status);
     Serial.print("  ");
@@ -611,6 +534,63 @@ void Rooster::printStatus(int status) {
             break;
     }
 }
+
+uint8_t Rooster::update(int hour, int minute, int dow)
+{
+    // update test of volgende Signaal actief is, en retourneert channel,
+    // verhoogt nextindex
+    Signaal_t bm;
+    laadSignaal(timtab[nextindex], bm);
+    if (hour == bm.hour && minute == bm.minute && ((1 << dow) & bm.dayOfWeek))
+    {
+        nextindex = (nextindex + 1) % numtimtab;
+        return bm.channel;
+    }
+    else
+    {
+        return INFO_NONE_ACTIVE; // geen signalen actief
+    }
+}
+
+int Rooster::aantalSignalen() 
+{
+    // geef huidig aantal signalen in rooster
+    return numtimtab;
+}
+
+int Rooster::haalVolgend(int index, int filter) 
+{
+    // blader naar volgend signaal in gegeven kanaal
+    // om eerste te halen, roep aan met index=-1
+    Signaal_t sig;
+    while (true) {
+        index++;
+        if (index >= numtimtab) {
+            return WARN_NOMORESIGNALS;
+        }
+        laadSignaal(timtab[index], sig);
+        if (sig.channel == filter) {
+            return index;
+        }
+    }
+}
+
+int Rooster::haalVorig(int index, int filter) 
+{
+    // blader naar vorig signaal in gegeven kanaal
+    Signaal_t sig;
+    while (true) {
+        index--;
+        if (index < 0) {
+            return WARN_NOMORESIGNALS;
+        }
+        laadSignaal(timtab[index], sig);
+        if (sig.channel == filter) {
+            return index;
+        }
+    }
+}
+
 /*
 int Rooster::vergelijkSignaalEeprom(int eeidx1, int eeidx2) {
     // vergelijk 2 signalen aangeduid met index
