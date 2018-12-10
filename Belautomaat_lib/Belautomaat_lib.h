@@ -11,6 +11,16 @@
 #include "belrooster.h"
 #include "Timer.h"
 
+/* ======== Debug hulpjes ======== */
+//#define DEBUG
+#ifdef DEBUG
+  #define DPRINT(...)     Serial.print(__VA_ARGS__)
+  #define DPRINTLN(...)   Serial.println(__VA_ARGS__)
+#else
+  #define DPRINT(...)
+  #define DPRINTLN(...)
+#endif
+
 /*---------------------------- timer ----------------------------*/
 /* Herinnering: class Timer methods
  *  int8_t every(unsigned long period, void (*callback)(void*), void* context);
