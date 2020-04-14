@@ -5,11 +5,11 @@ Belautomaat is een Arduino-project voor het maken van een automatische schakelkl
 Gemaakt door Paul Wiegmans (p.wiegmans@svok.nl)
 
 De belautomaat maakt gebruik van de volgende hardware. 
-* Arduino MEGA 2560
+* Arduino MEGA 2560 rev3 (met Atmel ATmega2560 processor)
 * 16x2 LCD display
 * 4 digit 7-segment LED display
-* 4x3 telephone styole keyboard
-* 4 push buttons
-* DS3132 high-precision real time clock
-* MP3 player
-* 4-channel Relais
+* 4x3 telefoonstijl toetsenbord
+* 4 drukknoppen
+* Maxim DS3231 hoge-precisie klok-IC met temperatuurgecompenseerde kristaloscillator
+* MP3 speler
+* relais voor 4 kanalen
