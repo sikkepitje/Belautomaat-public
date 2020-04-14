@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:\\Users\\p.wiegmans\\Onedrive - Stichting Voortgezet Onderwijs Kennemerland\\Documents\\Arduino\\libraries\\Belrooster",
+                "C:\\Users\\p.wiegmans\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\**",
+                "C:\\Users\\p.wiegmans\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.21\\**"
+            ],
+            "forcedInclude": [
+                "C:\\Users\\p.wiegmans\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.21\\cores\\arduino\\Arduino.h"
+            ],
+            "intelliSenseMode": "msvc-x64"
+        }
+    ],
+    "version": 4
+}

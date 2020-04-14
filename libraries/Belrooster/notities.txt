@@ -1,0 +1,14 @@
+/* Roostertabel en timtab grootte is afhankelijk van EEPROM grootte en board.  
+Symbolen voor de verschillende platformen zijn gedefinieerd in
+"C:\Program Files (x86)\Arduino\hardware\arduino\avr\boards.txt"
+#if defined(ARDUINO_AVR_MEGA2560)      // Arduino Mega EEPROM 4KB
+#elif defined(ARDUINO_AVR_UNO)          // Arduino Uno EEPROM 1KB
+#elif defined(ARDUINO_AVR_DUEMILANOVE)    // Arduino Duemilanove EEPROM: 512B (ATMega168) of 1KB (ATMega328)
+#elif defined(ARDUINO_AVR_LEONARDO)       // Arduino Leonardo of Micro Pro: 1KB (ATMega32U4)
+#else
+    #error "Unknown board"
+#endif
+
+Maar nog makkelijker: The symbol E2END is the last EEPROM address.
+In runtime wordt EEPROM-grootte gegeven door EEPROM.length(); 
+*/

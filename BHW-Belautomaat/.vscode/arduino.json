@@ -1,0 +1,8 @@
+{
+    "board": "arduino:avr:mega",
+    "configuration": "cpu=atmega2560",
+    "port": "COM3",
+    "sketch": "BHW-Belautomaat\\BHW-Belautomaat.ino",
+    "output": "../build",
+    "programmer": "AVR ISP"
+}
